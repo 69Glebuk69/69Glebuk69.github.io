@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой личный дневник</title>
+    <style>
+        /* Общие стили */
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            width: 85%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Шапка */
+        header {
+            background-color: #4a6fa5;
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            margin-top: 15px;
+        }
+
+        nav ul li {
+            margin-right: 20px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover, nav ul li a.active {
+            color: #ffd700;
+        }
+
+        /* Основное содержимое */
+        main {
+            padding: 30px 0;
+        }
+
+        section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #4a6fa5;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        /* Кнопки */
+        button {
+            background-color: #4a6fa5;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #3a5a80;
+        }
+
+        .mood-options {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .mood-btn {
+            font-size: 24px;
+            padding: 10px 20px;
+        }
+
+        /* Формы */
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            min-height: 100px;
+            margin-bottom: 10px;
+            resize: vertical;
+        }
+
+        /* Подвал */
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 30px;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+            }
+            
+            nav ul li {
+                margin-bottom: 10px;
+                margin-right: 0;
+            }
+        }
+
+        /* Дополнительные стили для элементов */
+        .note, .mood-entry {
+            background: #f9f9f9;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #4a6fa5;
+        }
+
+        .note small, .mood-entry small {
+            color: #666;
+            font-size: 0.8em;
+        }
+
+        .delete-note {
+            background: #e74c3c;
+            font-size: 0.8em;
+            padding: 5px 10px;
+            margin-top: 5px;
+        }
+
+        .delete-note:hover {
+            background: #c0392b;
+        }
+
+        blockquote {
+            border-left: 3px solid #4a6fa5;
+            padding-left: 15px;
+            font-style: italic;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Мой личный дневник</h1>
+            <nav>
+                <ul>
+                    <li><a href="#" class="active">Главная</a></li>
+                    <li><a href="#">Дневник</a></li>
+                    <li><a href="#">Цели</a></li>
+                    <li><a href="#">Фотоальбом</a></li>
+                    <li><a href="#">О себе</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section id="welcome">
+            <h2>Добро пожаловать в ваш личный мир</h2>
+            <p>Здесь вы можете записывать свои мысли, ставить цели и хранить важные моменты жизни.</p>
+            <button id="quoteBtn">Получить вдохновляющую цитату</button>
+            <div id="quoteDisplay"></div>
+        </section>
+
+        <section id="quick-notes">
+            <h2>Быстрые заметки</h2>
+            <textarea id="noteInput" placeholder="Запишите свои мысли..."></textarea>
+            <button id="saveNote">Сохранить</button>
+            <div id="savedNotes"></div>
+        </section>
+
+        <section id="mood-tracker">
+            <h2>Трекер настроения</h2>
+            <div class="mood-options">
+                <button class="mood-btn" data-mood="happy">😊</button>
+                <button class="mood-btn" data-mood="neutral">😐</button>
+                <button class="mood-btn" data-mood="sad">😔</button>
+                <button class="mood-btn" data-mood="angry">😠</button>
+            </div>
+            <div id="moodHistory"></div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2023 Мой личный дневник. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Генератор цитат
+            const quotes = [
+                "Мы — это то, что мы делаем постоянно. Совершенство, следовательно, не действие, а привычка. — Аристотель",
+    "Единственный способ сделать великую работу — любить то, что ты делаешь. — Стив Джобс",
+    "Жизнь — это то, что происходит с тобой, пока ты строишь другие планы. — Джон Леннон",
+    "Будь тем изменением, которое ты хочешь видеть в мире. — Махатма Ганди",
+    "Успех — это способность идти от неудачи к неудаче, не теряя энтузиазма. — Уинстон Черчилль",
+    "Счастье не в том, чтобы делать всегда, что хочешь, а в том, чтобы всегда хотеть того, что делаешь. — Лев Толстой",
+    "Лучший способ предсказать будущее — изобрести его. — Алан Кей",
+    "Не откладывай на завтра то, что можешь сделать послезавтра. — Марк Твен",
+    "Единственное, что стоит между тобой и твоей мечтой — это воля попробовать и вера, что это возможно. — Джоэл Браун",
+    "Сложнее всего начать действовать, все остальное зависит только от упорства. — Амелия Эрхарт",
+    "Если вы думаете, что слишком малы, чтобы что-то изменить, попробуйте спать в комнате с комаром. — Далай-лама",
+    "Не бойтесь совершенства. Вам его всё равно не достичь. — Сальвадор Дали",
+    "Ты никогда не переплывешь океан, если будешь бояться потерять берег из виду. — Христофор Колумб",
+    "Великие дела совершаются не силой, а упорством. — Сэмюэл Джонсон",
+    "Мечты становятся реальностью, когда мысли превращаются в действия. — Дональд Трамп",
+    "Лучший момент, чтобы посадить дерево, был 20 лет назад. Следующий лучший момент — сейчас. — Китайская пословица",
+    "Ваше время ограничено, не тратьте его, живя чужой жизнью. — Стив Джобс",
+    "Не ждите. Время никогда не будет подходящим. — Наполеон Хилл",
+    "Я не потерпел неудачу. Я просто нашел 10 000 способов, которые не работают. — Томас Эдисон",
+    "Единственное ограничение — это то, что вы устанавливаете в своем уме. — Энтони Роббинс",
+    "Сначала они игнорируют тебя, потом смеются над тобой, потом борются с тобой, а потом ты побеждаешь. — Махатма Ганди",
+    "Если вы хотите добиться успеха, задайте себе 4 вопроса: Почему? А почему бы и нет? Почему бы и не я? Почему бы и не сейчас? — Джеймс Аллен",
+    "Не иди туда, куда ведет путь. Иди туда, где нет пути, и оставь след. — Ральф Уолдо Эмерсон",
+    "Победа — это еще не все, важно постоянное желание побеждать. — Винс Ломбарди",
+    "То, что не убивает нас, делает нас сильнее. — Фридрих Ницше"
+            ];
+            
+            const quoteBtn = document.getElementById('quoteBtn');
+            const quoteDisplay = document.getElementById('quoteDisplay');
+            
+            quoteBtn.addEventListener('click', function() {
+                const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+                quoteDisplay.innerHTML = `<blockquote>${randomQuote}</blockquote>`;
+            });
+            
+            // Система заметок
+            const noteInput = document.getElementById('noteInput');
+            const saveNote = document.getElementById('saveNote');
+            const savedNotes = document.getElementById('savedNotes');
+            
+            saveNote.addEventListener('click', function() {
+                const noteText = noteInput.value.trim();
+                if (noteText) {
+                    const noteElement = document.createElement('div');
+                    noteElement.className = 'note';
+                    const now = new Date();
+                    noteElement.innerHTML = `
+                        <p>${noteText}</p>
+                        <small>${now.toLocaleString()}</small>
+                        <button class="delete-note">Удалить</button>
+                    `;
+                    savedNotes.prepend(noteElement);
+                    noteInput.value = '';
+                    
+                    // Сохранение в localStorage
+                    saveNotesToLocalStorage();
+                }
+            });
+            
+            // Удаление заметок
+            savedNotes.addEventListener('click', function(e) {
+                if (e.target.classList.contains('delete-note')) {
+                    e.target.parentElement.remove();
+                    saveNotesToLocalStorage();
+                }
+            });
+            
+            // Загрузка заметок из localStorage
+            function loadNotesFromLocalStorage() {
+                const notes = JSON.parse(localStorage.getItem('personalNotes')) || [];
+                savedNotes.innerHTML = '';
+                notes.forEach(note => {
+                    const noteElement = document.createElement('div');
+                    noteElement.className = 'note';
+                    noteElement.innerHTML = `
+                        <p>${note.text}</p>
+                        <small>${note.date}</small>
+                        <button class="delete-note">Удалить</button>
+                    `;
+                    savedNotes.appendChild(noteElement);
+                });
+            }
+            
+            function saveNotesToLocalStorage() {
+                const notes = [];
+                document.querySelectorAll('.note').forEach(noteElement => {
+                    notes.push({
+                        text: noteElement.querySelector('p').textContent,
+                        date: noteElement.querySelector('small').textContent
+                    });
+                });
+                localStorage.setItem('personalNotes', JSON.stringify(notes));
+            }
+            
+            // Трекер настроения
+            const moodBtns = document.querySelectorAll('.mood-btn');
+            const moodHistory = document.getElementById('moodHistory');
+            
+            moodBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const mood = this.getAttribute('data-mood');
+                    const now = new Date();
+                    const moodEntry = document.createElement('div');
+                    moodEntry.className = 'mood-entry';
+                    
+                    let moodText = '';
+                    switch(mood) {
+                        case 'happy': moodText = '😊 Хорошее'; break;
+                        case 'neutral': moodText = '😐 Нейтральное'; break;
+                        case 'sad': moodText = '😔 Грустное'; break;
+                        case 'angry': moodText = '😠 Злое'; break;
+                    }
+                    
+                    moodEntry.innerHTML = `
+                        <span>${moodText}</span>
+                        <small>${now.toLocaleString()}</small>
+                    `;
+                    moodHistory.prepend(moodEntry);
+                    
+                    // Сохранение настроения в localStorage
+                    saveMoodsToLocalStorage();
+                });
+            });
+            
+            // Загрузка истории настроения из localStorage
+            function loadMoodsFromLocalStorage() {
+                const moods = JSON.parse(localStorage.getItem('moodHistory')) || [];
+                moodHistory.innerHTML = '';
+                moods.forEach(mood => {
+                    const moodEntry = document.createElement('div');
+                    moodEntry.className = 'mood-entry';
+                    moodEntry.innerHTML = `
+                        <span>${mood.text}</span>
+                        <small>${mood.date}</small>
+                    `;
+                    moodHistory.appendChild(moodEntry);
+                });
+            }
+            
+            function saveMoodsToLocalStorage() {
+                const moods = [];
+                document.querySelectorAll('.mood-entry').forEach(moodEntry => {
+                    moods.push({
+                        text: moodEntry.querySelector('span').textContent,
+                        date: moodEntry.querySelector('small').textContent
+                    });
+                });
+                localStorage.setItem('moodHistory', JSON.stringify(moods));
+            }
+            
+            // Инициализация при загрузке
+            loadNotesFromLocalStorage();
+            loadMoodsFromLocalStorage();
+        });
+    </script>
+</body>
+</html>
